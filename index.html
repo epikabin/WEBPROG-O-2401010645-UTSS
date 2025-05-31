@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRUD Barang</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light p-4">
+
+<div class="container">
+  <h2 class="mb-4">Daftar Barang</h2>
+  <button class="btn btn-primary mb-3" id="btn-add">Tambah Barang</button>
+
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>ID Barang</th>
+        <th>Nama Barang</th>
+        <th>Harga Barang (Rp)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <!-- Data akan muncul di sini -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Create/Update -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="modalFormLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="formData" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalFormLabel">Tambah Barang</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="inputIndex" />
+        <div class="mb-3">
+          <label for="inputId" class="form-label">ID Barang</label>
+          <input type="text" class="form-control" id="inputId" required />
+        </div>
+        <div class="mb-3">
+          <label for="inputNama" class="form-label">Nama Barang</label>
+          <input type="text" class="form-control" id="inputNama" required />
+        </div>
+        <div class="mb-3">
+          <label for="inputHarga" class="form-label">Harga Barang (Rp)</label>
+          <input type="number" class="form-control" id="inputHarga" min="0" required />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Delete -->
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDeleteLabel">Konfirmasi Hapus</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus barang dengan ID: <strong id="delId"></strong> dan Nama: <strong id="delNama"></strong>?</p>
+        <input type="hidden" id="delIndex" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-danger" id="btn-delete-confirm">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const dataBarang = [
+    { id: "B001", nama: "Pulpen", harga: 2000 },
+    { id: "B002", nama: "Buku Tulis", harga: 5000 }
+  ];
+
+  const tableBody = document.getElementById('table-body');
+  const modalForm = new bootstrap.Modal(document.getElementById('modalForm'));
+  const modalDelete = new bootstrap.Modal(document.getElementById('modalDelete'));
+
+  const formData = document.getElementById('formData');
+  const inputIndex = document.getElementById('inputIndex');
+  const inputId = document.getElementById('inputId');
+  const inputNama = document.getElementById('inputNama');
+  const inputHarga = document.getElementById('inputHarga');
+
+  const delId = document.getElementById('delId');
+  const delNama = document.getElementById('delNama');
+  const delIndex = document.getElementById('delIndex');
+  const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+
+  const btnAdd = document.getElementById('btn-add');
+
+  // Render data ke tabel
+  function renderTable() {
+    tableBody.innerHTML = '';
+    dataBarang.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.id}</td>
+        <td>${item.nama}</td>
+        <td>${item.harga.toLocaleString('id-ID')}</td>
+        <td>
+          <button class="btn btn-warning btn-sm btn-edit" data-index="${index}">Edit</button>
+          <button class="btn btn-danger btn-sm btn-delete" data-index="${index}">Delete</button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+
+    // Tambah event edit
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.onclick = () => {
+        const idx = parseInt(btn.dataset.index);
+        const barang = dataBarang[idx];
+        inputIndex.value = idx;
+        inputId.value = barang.id;
+        inputNama.value = barang.nama;
+        inputHarga.value = barang.harga;
+        inputId.readOnly = true; // ID tidak bisa diubah saat edit
+        document.getElementById('modalFormLabel').textContent = "Edit Barang";
+        modalForm.show();
+      }
+    });
+
+    // Tambah event delete
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.onclick = () => {
+        const idx = parseInt(btn.dataset.index);
+        const barang = dataBarang[idx];
+        delId.textContent = barang.id;
+        delNama.textContent = barang.nama;
+        delIndex.value = idx;
+        modalDelete.show();
+      }
+    });
+  }
+
+  btnAdd.onclick = () => {
+    inputIndex.value = '';
+    inputId.value = '';
+    inputNama.value = '';
+    inputHarga.value = '';
+    inputId.readOnly = false; // Bisa isi ID baru
+    document.getElementById('modalFormLabel').textContent = "Tambah Barang";
+    modalForm.show();
+  };
+
+  formData.onsubmit = (e) => {
+    e.preventDefault();
+    const idx = inputIndex.value;
+    const idVal = inputId.value.trim();
+    const namaVal = inputNama.value.trim();
+    const hargaVal = parseInt(inputHarga.value);
+
+    if (!idVal || !namaVal || isNaN(hargaVal) || hargaVal < 0) {
+      alert('Mohon isi semua field dengan benar!');
+      return;
+    }
+
+    if (idx === '') {
+      // Create - cek duplikat ID
+      if (dataBarang.some(b => b.id === idVal)) {
+        alert('ID Barang sudah ada!');
+        return;
+      }
+      dataBarang.push({ id: idVal, nama: namaVal, harga: hargaVal });
+    } else {
+      // Update
+      dataBarang[idx].nama = namaVal;
+      dataBarang[idx].harga = hargaVal;
+    }
+
+    modalForm.hide();
+    renderTable();
+  };
+
+  btnDeleteConfirm.onclick = () => {
+    const idx = parseInt(delIndex.value);
+    dataBarang.splice(idx, 1);
+    modalDelete.hide();
+    renderTable();
+  };
+
+  renderTable();
+</script>
+
+</body>
+</html>
