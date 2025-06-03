@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title> Data Barang</title>
+<style>
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef3fc;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+  .container {
+    background: #fff;
+    max-width: 900px;
+    width: 100%;
+    padding: 2rem 2.5rem;
+    border-radius: 15px;
+    box-shadow: 
+      0 8px 20px rgba(53, 64, 143, 0.12),
+      0 3px 6px rgba(53, 64, 143, 0.07);
+  }
+  h1 {
+    color: #34418c;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+  .identity {
+    text-align: center;
+    font-style: italic;
+    color: #6d7a9e;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+  form {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    border: 2px solid #d7def9;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    background-color: #f7f9ff;
+  }
+  label {
+    flex-basis: 100%;
+    font-weight: 600;
+    color: #34418c;
+    margin-bottom: 0.3rem;
+  }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    font-size: 1rem;
+    border: 2px solid #a8b3f0;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    outline-offset: 0;
+    outline-color: transparent;
+  }
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline-color: #34418c;
+    border-color: #34418c;
+  }
+  .form-group {
+    flex: 1 1 40%;
+    min-width: 200px;
+  }
+  .actions {
+    display: flex;
+    align-items: flex-end;
+  }
+  button {
+    background-color: #34418c;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #2a3270;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 12px rgba(53, 64, 143, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead tr {
+    background-color: #34418c;
+    color: white;
+    font-weight: 700;
+  }
+  thead th, tbody td {
+    padding: 1rem 1.1rem;
+    text-align: left;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #f4f6ff;
+  }
+  tbody tr:hover {
+    background-color: #dbe1ff;
+  }
+  .btn-edit,
+  .btn-delete {
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    margin-right: 0.4rem;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  .btn-edit {
+    background-color: #2fba67;
+  }
+  .btn-edit:hover {
+    background-color: #238538;
+  }
+  .btn-delete {
+    background-color: #d64545;
+  }
+  .btn-delete:hover {
+    background-color: #a02b2b;
+  }
+  p.empty-msg {
+    text-align: center;
+    padding: 1.5rem;
+    color: #888;
+    font-style: italic;
+  }
+  @media (max-width: 600px) {
+    form {
+      flex-direction: column;
+    }
+    .form-group {
+      flex-basis: 100%;
+      min-width: auto;
+    }
+    .actions {
+      justify-content: flex-start;
+    }
+    button {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="CRUD Data Barang">
+    <h1> Data Barang</h1>
+    <div class="identity" aria-label="Identitas pengembang">
+      Nama: [serafiana triani abin]<br />
+      NIM: [2401010645]
+    </div>
+    <form id="form-barang" aria-describedby="form-desc">
+      <div id="form-desc" style="position:absolute;left:-9999px;">Form untuk membuat atau memperbarui data barang.</div>
+      <input type="hidden" id="input-id" />
+      <div class="form-group">
+        <label for="input-nama">Nama Barang</label>
+        <input type="text" id="input-nama" name="nama" placeholder="Contoh: Keyboard" required aria-required="true" aria-describedby="error-nama" />
+        <span id="error-nama" role="alert" style="color:#d64545;display:none;">Nama barang harus diisi.</span>
+      </div>
+      <div class="form-group">
+        <label for="input-jumlah">Jumlah</label>
+        <input type="number" id="input-jumlah" name="jumlah" min="1" placeholder="Contoh: 20" required aria-required="true" aria-describedby="error-jumlah" />
+        <span id="error-jumlah" role="alert" style="color:#d64545;display:none;">Jumlah harus minimal 1.</span>
+      </div>
+      <div class="actions">
+        <button type="submit" id="btn-submit">Tambah</button>
+      </div>
+    </form>
+
+    <table aria-label="Daftar data barang" id="table-barang" tabindex="0">
+      <thead>
+        <tr>
+          <th scope="col">Nama Barang</th>
+          <th scope="col">Jumlah</th>
+          <th scope="col">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data rows here -->
+      </tbody>
+    </table>
+    <p class="empty-msg" id="empty-msg" style="display:none;">Belum ada data barang tersedia.</p>
+  </div>
+
+<script>
+  (function(){
+    const form = document.getElementById('form-barang');
+    const inputId = document.getElementById('input-id');
+    const inputNama = document.getElementById('input-nama');
+    const inputJumlah = document.getElementById('input-jumlah');
+    const btnSubmit = document.getElementById('btn-submit');
+    const tableBody = document.querySelector('#table-barang tbody');
+    const emptyMsg = document.getElementById('empty-msg');
+
+    // Error spans for validation messages
+    const errorNama = document.getElementById('error-nama');
+    const errorJumlah = document.getElementById('error-jumlah');
+
+    // Load data from localStorage or empty array
+    let dataBarang = JSON.parse(localStorage.getItem('dataBarang')) || [];
+
+    // Render Table content
+    function renderTable() {
+      tableBody.innerHTML = '';
+      if(dataBarang.length === 0) {
+        emptyMsg.style.display = 'block';
+        return;
+      } else {
+        emptyMsg.style.display = 'none';
+      }
+
+      dataBarang.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+
+        const tdNama = document.createElement('td');
+        tdNama.textContent = item.nama;
+        tr.appendChild(tdNama);
+
+        const tdJumlah = document.createElement('td');
+        tdJumlah.textContent = item.jumlah;
+        tr.appendChild(tdJumlah);
+
+        const tdAksi = document.createElement('td');
+
+        // Edit button
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn-edit';
+        btnEdit.textContent = 'simpan';
+        btnEdit.setAttribute('aria-label', `Edit data barang ${item.nama}`);
+        btnEdit.type = 'button';
+        btnEdit.addEventListener('click', () => startEdit(idx));
+        tdAksi.appendChild(btnEdit);
+
+        // Delete button
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'btn-delete';
+        btnDelete.textContent = 'Hapus';
+        btnDelete.setAttribute('aria-label', `Hapus data barang ${item.nama}`);
+        btnDelete.type = 'button';
+        btnDelete.addEventListener('click', () => deleteItem(idx));
+        tdAksi.appendChild(btnDelete);
+
+        tr.appendChild(tdAksi);
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Save data to localStorage
+    function saveData() {
+      localStorage.setItem('dataBarang', JSON.stringify(dataBarang));
+    }
+
+    // Reset form fields and errors
+    function resetForm() {
+      form.reset();
+      inputId.value = '';
+      btnSubmit.textContent = 'Tambah';
+      hideErrors();
+    }
+    // Show validation errors
+    function showErrors() {
+      let hasError = false;
+      if (!inputNama.value.trim()) {
+        errorNama.style.display = 'inline';
+        hasError = true;
+      } else {
+        errorNama.style.display = 'none';
+      }
+      if (!inputJumlah.value.trim() || Number(inputJumlah.value) < 1) {
+        errorJumlah.style.display = 'inline';
+        hasError = true;
+      } else {
+        errorJumlah.style.display = 'none';
+      }
+      return hasError;
+    }
+
+    // Hide all validation errors
+    function hideErrors() {
+      errorNama.style.display = 'none';
+      errorJumlah.style.display = 'none';
+    }
+
+    // Handle form submission Create/Update
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      if (showErrors()) return;
+
+      const namaVal = inputNama.value.trim();
+      const jumlahVal = Number(inputJumlah.value.trim());
+
+      const existingId = inputId.value;
+      if(existingId === '') {
+        // Create new
+        dataBarang.push({ nama: namaVal, jumlah: jumlahVal });
+      } else {
+        // Update
+        dataBarang[existingId] = { nama: namaVal, jumlah: jumlahVal };
+      }
+
+      saveData();
+      renderTable();
+      resetForm();
+    });
+
+    // Start editing data at index
+    function startEdit(idx) {
+      const item = dataBarang[idx];
+      inputId.value = idx;
+      inputNama.value = item.nama;
+      inputJumlah.value = item.jumlah;
+      btnSubmit.textContent = 'Update';
+      hideErrors();
+      inputNama.focus();
+    }
+
+    // Delete data item at index
+    function deleteItem(idx) {
+      const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus data "${dataBarang[idx].nama}"?`);
+      if(confirmDelete) {
+        dataBarang.splice(idx, 1);
+        saveData();
+        renderTable();
+
+        // Reset form if currently editing deleted item
+        if(inputId.value === String(idx)) {
+          resetForm();
+        }
+        // After deletion, if editing index > deleted, adjust index
+        if(inputId.value !== '' && Number(inputId.value) > idx) {
+          inputId.value = Number(inputId.value) - 1;
+        }
+      }
+    }
+
+    // Initial render on load
+    renderTable();
+  })();
+</script>
+</body>
+</html>
+
